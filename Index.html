@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Dashboard</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fullcalendar.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="container py-5">
+
+    <div class="text-center mb-4">
+        <h1 class="display-4">Productivity Dashboard</h1>
+        <h2 id="largeClock" class="display-3 fw-bold">00:00:00</h2>
+    </div>
+
+    <div id="motivationalQuote" class="alert alert-info text-center mb-4">
+    </div>
+
+    <div class="accordion" id="dashboardAccordion">
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#wellbeingSection">
+                    Wellbeing Check-in
+                </button>
+            </h2>
+            <div id="wellbeingSection" class="accordion-collapse collapse show" data-bs-parent="#dashboardAccordion">
+                <div class="accordion-body">
+                    <div class="card p-3">
+                        <h5>Wellbeing Factors (1-10 for each)</h5>
+                        <p>Rate each factor to get an overall wellbeing percentage. Adjust each factor using the buttons.</p>
+
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>💪 Work Done: <span id="workDoneValue">5</span>/10</div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('workDone', -1)">-</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('workDone', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>😊 Emotion: <span id="emotionValue">5</span>/10</div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('emotion', -1)">-</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('emotion', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>🏃 Activity: <span id="activityValue">5</span>/10</div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('activity', -1)">-</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('activity', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>🍎 Food: <span id="foodValue">5</span>/10</div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('food', -1)">-</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="adjustFactor('food', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                Overall Wellbeing: <span id="overallWellbeingValue">50</span>%
+                            </div>
+                        </div>
+                        <div class="progress">
+                            <div id="wellbeingProgressBar" class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span id="wellbeingEmoji" style="font-size: 2em;">🙂</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#studySection">
+                    Study Section
+                </button>
+            </h2>
+            <div id="studySection" class="accordion-collapse collapse show" data-bs-parent="#dashboardAccordion">
+                <div class="accordion-body">
+                    <div class="card p-3">
+                        <label for="pomodoroMode">Pomodoro Timer</label>
+                        <select class="form-select mb-2" id="pomodoroMode">
+                            <option value="short">Short Session (25 min focus / 5 min break)</option>
+                            <option value="long">Long Session (50 min focus / 10 min break)</option>
+                        </select>
+                        <button class="btn btn-primary w-100 mb-2" id="startPomodoro" onclick="startPomodoroTimer()">Start Pomodoro</button>
+                        <button class="btn btn-danger w-100 mb-3" id="stopPomodoro" onclick="stopPomodoroTimer()">Stop Pomodoro</button>
+                        <p class="mt-3 text-center fw-bold display-5" id="pomodoroTimer">25:00</p>
+                        <p><a href="https://pomofocus.io/" target="_blank">Pomofocus.io</a></p>
+                    </div>
+                    <div class="card p-3 mt-3">
+                        <h5>Calendar Integration (via FullCalendar)</h5>
+                        <div id="calendar"></div>
+                    </div>
+                    <div class="card p-3 mt-3">
+                        <h5>Reminders</h5>
+                        <input type="text" id="reminderText" class="form-control mb-2" placeholder="Enter reminder">
+                        <input type="time" id="reminderTime" class="form-control mb-2">
+                        <button class="btn btn-success w-100" onclick="setReminder()">Set Reminder</button>
+                        <ul id="reminderList" class="mt-3 list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#healthSection">
+                    Health & Food Section
+                </button>
+            </h2>
+            <div id="healthSection" class="accordion-collapse collapse" data-bs-parent="#dashboardAccordion">
+                <div class="accordion-body">
+                    <div class="card p-3">
+                        <h5>Well-being and Calm</h5>
+                        <p>well-being is vital for focus and success. Balanced nutrition, including whole foods, regular meals, and plenty of water, fuels your brain and body, boosting energy and reducing stress. Consistent routines with regular breaks, adequate sleep, and physical activity improve mental clarity. Managing stress through techniques like deep breathing and seeking social connection further enhances well-being, paving the way for better academic performance and overall happiness.</p>
+                        <p>Recommended Video: <a href="https://www.youtube.com/watch?v=j6Y6qKZvLqQ" target="_blank">The Science of Well-being - Educational Video</a></p>
+                    </div>
+                    <div class="card p-3 mt-3">
+                        <h5>Calorie Calculator</h5>
+                        <p>Use this <a href="https://www.calculator.net/calorie-calculator.html" target="_blank">Calorie Calculator</a> to track your intake and maintain a balanced diet.</p>
+                        <div>
+                            <label for="mealType">Select Meal Type:</label>
+                            <select class="form-select mb-2" id="mealType">
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="snacks">Snacks</option>
+                            </select>
+                            <input type="number" id="mealQuantity" class="form-control" placeholder="Enter Quantity">
+                            <button class="btn btn-success mt-2" onclick="calculateCalories()">Add to Calories</button>
+                            <p id="totalCalories" class="mt-3">Total Calories: 0</p>
+                            <div class="progress mt-3">
+                                <div id="calorieProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2000">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="modal fade" id="stretchReminderModal" tabindex="-1" aria-labelledby="stretchReminderModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content text-center">
+              <div class="modal-header">
+                  <h5 class="modal-title w-100" id="stretchReminderModalLabel">Stretch Reminder!</h5>
+              </div>
+              <div class="modal-body">
+                  It's time to stretch! Take a short break to relax your muscles and improve circulation 🧘‍♂️.
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Got it!</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <audio id="stretchDing" src="https://archive.org/download/bell-ding-002/bell-ding-002.mp3" preload="auto" style="display:none;"></audio>
+    <audio id="reminderDing" src="https://archive.org/download/musical-call-bell-ding-002/musical-call-bell-ding-002.mp3" preload="auto" style="display:none;"></audio>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/fullcalendar.min.js"></script>
+    <script src="js/script.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+</body>
+</html>
